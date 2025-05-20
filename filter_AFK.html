@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Anisotropic Kuwahara Filter</title>
+  <style>
+    label {
+      display: inline-block;
+      width: 180px;
+      margin-top: 10px;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Radius Slider -->
+  <label for="radiusSlider">Filter Radius: <span id="radiusValue">3</span></label>
+  <input type="range" id="radiusSlider" min="1" max="10" value="3"><br>
+
+  <!-- Strength Slider -->
+  <label for="strengthSlider">Filter Strength: <span id="strengthValue">1.00</span></label>
+  <input type="range" id="strengthSlider" min="0" max="100" value="100"><br>
+
+  <!-- Sector Count Slider -->
+  <label for="sectorSlider">Directional Sectors: <span id="sectorValue">8</span></label>
+  <input type="range" id="sectorSlider" min="2" max="16" value="8"><br>
+
+  <!-- Artifact Strength Slider -->
+  <label for="artifactSlider">Artifact Strength: <span id="artifactValue">1.00</span></label>
+  <input type="range" id="artifactSlider" min="0" max="100" value="100"><br><br>
+
+  <!-- Hidden Image & Canvas -->
+  <img id="sourceImage" src="/17_kuwaharaV2/images/pink4.jpg" style="display: none;" crossorigin="anonymous" />
+  <canvas id="canvas"></canvas>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
