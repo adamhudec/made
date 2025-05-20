@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Antialiasing Kuwahara Filter Presentation</title>
+  <style>
+    body {
+      font-family: Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #000000;
+      color: #ffffff;
+    }
+
+    section {
+      font-size: 20px;
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: auto;
+      border-bottom: 1px solid #ddd;
+    }
+
+    h1, h2 {
+      font-size: 30px;
+      color: #ffffff;
+    }
+    h3 {
+      font-size: 41px;
+      color: #ffffff;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .small {
+      font-size: 17px;
+      line-height: 1.5;
+      color: #ffffff;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background: #00000000;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #ffffff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0);
+      z-index: 999;
+      padding: 10px 20px;
+    }
+
+    .nav-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .nav-right a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .nav-left a {
+      font-size: 20px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+      padding:-5px 0px
+    }
+
+    .nav-right a:first-child {
+      margin-left: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .image-row {
+      display: flex;
+      gap: 20px; /* space between images */
+      justify-content: left; 
+      align-items: center; /* align vertical */
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .image-row img {
+      height: 150px; /* or any height you prefer */
+      object-fit: contain; /* preserve aspect ratio */
+      border-radius: 0px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-container">
+      <div class="nav-right">
+        <a href="#intro">Intro</a>
+        <a href="#classic">Mechanism</a>
+        <a href="#problem">Problem</a>
+        <a href="#gkf">GKF</a>
+        <a href="#akf">AKF</a>
+        <a href="#usage">Usage</a>
+        <a href="#end">End</a>
+      </div>
+    </div>
+  </nav>
+
+  <section id="top">
+    <h3>The Kuwahara Filter</h3>
+  </section>
+
+  <section id="intro">
+    <h1>Michiyoshi Kuwahara</h1>
+    <p>
+      In the 1970s Michiyoshi Kuwahara worked on developing medical imaging of dynamic heart muscle. The created images would come out with a lot of noise. He devised his image smoothing technique designed to reduce noise while preserving edges.
+    </p>
+  </section>
+
+  <section id="classic">
+    <h2>How it works</h2>
+    <p>
+      The filter sets a square area around a pixel, divides the are into 4 overlapping sub-regions. For each sector it calculates the average color value and the standart deviation, afterwards the pixel is asigned the value of the sub-region the lowest standart deviation (most similar pixels).
+    </p>
+    <p>
+      If a pixel is just outside an edge, the filter will usually choose a smooth region on the same side, away from the edge. If the pixel is right on the edge, it tends to pick the smoother of the two sides – whichever has less variation.
+    </p>
+    <div class="image-row">
+      <img src="images/eq0.png" alt="Division">
+      <img src="images/s0.png" alt="Pixels">
+      <img src="images/s5.png" alt="Values">
+    </div>
+    <p>
+      For color images, the filter should not be performed by applying the filter to each RGB channel separately, rather than HSV color space should be used. 
+    </p>
+    <iframe src="filter_KFv2.html" width="120%" height="600px" style="border: none; border-radius: 0px; margin-top: 0px; margin-left: -27px;">
+    </iframe>
+  </section>
+
+  <section id="problem">
+    <h2>The Blockiness Problem</h2>
+    <p>Each pixel has the same weight, therefore while calculating it creates blocky artifacts.</p>
+    <img src="images/pink2.jpg" alt="Blocky Artifacts">
+  </section>
+
+  <section id="gkf">
+    <h2>Generalized Kuwahara Filter</h2>
+    <p>Giuseppe Papari and his team introduced several improvements to the original filter. They replaced the square window with a circular one divided into 8 segments, added Gaussian weighting to emphasize central pixels, and refined the method for determining the final output color.</p>
+    <p>
+      We need to calculate the the chosen pixel's contrubution to a sector. To figure out what sector is the pixel in. The following equasion is used:
+    </p>
+    <img src="images/placeholder.png" alt="Antialiasing Scheme">
+  </section>
+
+  <section id="formula">
+    <h2>Anisotropic Kuwahara Filter</h2>
+    <p>
+      Instead of gaussian weight this filter version uses polynomials to approximate the pixel weight
+    </p>
+    <p class="small">This results in smoother transitions between regions, preserving edges while eliminating chunkiness.</p>
+  </section>
+
+  <section id="usage">
+    <h2>Usage</h2>
+    <p>On the left: Classic Kuwahara. On the right: Antialiased version. Notice smoother transitions and preserved detail.</p>
+    <img src="images/placeholder.png" alt="Before and After Comparison">
+  </section>
+
+
+  <section id="end">
+    <h2>Sources</h2>
+    <p>
+      The Antialiasing Kuwahara filter modernizes a classic technique, improving visual quality and maintaining important edge features. It’s a great example of combining statistical rigor with perceptual improvements.
+    </p>
+  </section>
+
+</body>
+</html>
