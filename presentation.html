@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Antialiasing Kuwahara Filter Presentation</title>
+  <style>
+    body {
+      font-family: Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #000000;
+      color: #ffffff;
+    }
+
+    section {
+      font-size: 17px;
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: auto;
+      border-bottom: 1px solid #ddd;
+    }
+
+    h1, h2 {
+      font-size: 27x;
+      color: #ffffff;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .small {
+      font-size: 17px;
+      color: #ffffff;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #000000;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+
+    .nav-left a {
+      font-size: 20px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+      padding:-5px 0px
+    }
+
+    .nav-right a {
+      margin-left: 17px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .nav-right a:first-child {
+      margin-left: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="#top">✦</a>
+      </div>
+      <div class="nav-right">
+        <a href="#intro">Intro</a>
+        <a href="#classic">Classic</a>
+        <a href="#problem">Problem</a>
+        <a href="#antialiasing">Fix</a>
+        <a href="#formula">How</a>
+        <a href="#comparison">Compare</a>
+        <a href="#apps">Apps</a>
+        <a href="#conclusion">End</a>
+      </div>
+    </div>
+  </nav>
+
+  <section id="top"></section>
+
+  <section id="intro">
+    <h1>Antialiasing Kuwahara Filter</h1>
+    <p>Edge-preserving smoothing without the blocky side-effects.</p>
+  </section>
+
+  <section id="classic">
+    <h2>What is the Kuwahara Filter?</h2>
+    <p>The classic Kuwahara filter smooths an image by choosing the subregion with the least variance and using its mean. However, this can introduce sharp blocky artifacts.</p>
+    <iframe src="filter_KFv2.html" width="120%" height="600px" style="border: none; border-radius: 0px; margin-top: 0px; margin-left: -27px;">
+    </iframe>
+  </section>
+
+  <section id="problem">
+    <h2>The Blockiness Problem</h2>
+    <p>Due to hard decisions and axis-aligned regions, the classic filter often produces unnatural, chunky results especially in textured or complex areas.</p>
+    <img src="images/placeholder.png" alt="Blocky Artifacts">
+  </section>
+
+  <section id="antialiasing">
+    <h2>The Antialiasing Solution</h2>
+    <p>This variant softens the selection process. Instead of picking one region, it blends them using a weighted average based on variance.</p>
+    <img src="images/placeholder.png" alt="Antialiasing Scheme">
+  </section>
+
+  <section id="formula">
+    <h2>How It Works</h2>
+    <p>
+      For each overlapping region \( R_i \), compute mean \( \mu_i \) and variance \( \sigma_i^2 \).  
+      Then compute weights \( w_i = \exp\left(-\frac{\sigma_i^2}{2\lambda^2}\right) \)  
+      Final pixel value:  
+    </p>
+    <pre><code>I_out(x) = Σ(w_i * μ_i) / Σ(w_i)</code></pre>
+    <p class="small">This results in smoother transitions between regions, preserving edges while eliminating chunkiness.</p>
+  </section>
+
+  <section id="comparison">
+    <h2>Visual Comparison</h2>
+    <p>On the left: Classic Kuwahara. On the right: Antialiased version. Notice smoother transitions and preserved detail.</p>
+    <img src="images/placeholder.png" alt="Before and After Comparison">
+  </section>
+
+  <section id="apps">
+    <h2>Applications</h2>
+    <ul>
+      <li>Artistic image filtering (painterly effects)</li>
+      <li>Medical and satellite image preprocessing</li>
+      <li>Segmentation preprocessing in vision pipelines</li>
+    </ul>
+  </section>
+
+  <section id="conclusion">
+    <h2>Conclusion</h2>
+    <p>
+      The antialiasing Kuwahara filter modernizes a classic technique, improving visual quality and maintaining important edge features. It’s a great example of combining statistical rigor with perceptual improvements.
+    </p>
+  </section>
+
+</body>
+</html>
