@@ -2,7 +2,7 @@
 
 # Kuwahara Filter – Interactive Image Processing Tool
 
-This is an interactive web-based implementation of the **Kuwahara Filter**, a non-linear image smoothing technique that preserves edges while reducing noise. The project allows users to apply the filter to a chosen image and dynamically adjust the radius of the effect.
+An interactive web-based implementation of the **Kuwahara Filter**.
 
 ---
 
