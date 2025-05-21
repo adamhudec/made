@@ -7,8 +7,9 @@
     body {
       background-color: #000;
       color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
+      font-family: 'Figtree', sans-serif;
+      padding: 22px;
+      font-size: 22px;
     }
 
     .slider-group {
@@ -52,27 +53,22 @@
 
   <div class="slider-group">
     <label for="radiusSlider">Filter Radius: <span id="radiusValue">3</span></label>
-    <input type="range" id="radiusSlider" min="1" max="10" value="3">
-  </div>
-
-  <div class="slider-group">
-    <label for="artifactSlider">Artifact Strength: <span id="artifactValue">1.00</span></label>
-    <input type="range" id="artifactSlider" min="0" max="100" value="100">
+    <input type="range" id="radiusSlider" min="1" max="10" value="1">
   </div>
 
   <!-- Image and Canvas Container -->
   <div class="canvas-container">
     <div>
       <canvas id="filteredCanvas"></canvas>
-      <div class="canvas-label">Filtered Image</div>
+      <div class="canvas-label"></div>
     </div>
     <div>
       <canvas id="originalCanvas"></canvas>
-      <div class="canvas-label">Original Image</div>
+      <div class="canvas-label"></div>
     </div>
   </div>
 
-  <img id="sourceImage" src="images/pink4.jpg" style="display: none;" crossorigin="anonymous" />
+  <img id="sourceImage" src="images/kvetina2n.jpg" style="display: none;" crossorigin="anonymous" />
 
   <script src="script_KFv2.js"></script>
 </body>
