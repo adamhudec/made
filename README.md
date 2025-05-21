@@ -1,5 +1,3 @@
-# MaDe
-
 # Kuwahara Filter – Interactive Image Processing Tool
 
 An interactive web-based implementation of the **Kuwahara Filter**.
@@ -30,7 +28,7 @@ An interactive web-based implementation of the **Kuwahara Filter**.
 
 ## 👤 Author
 
-Created by **Adam Hudec** https://adamhudec.gfx.work,
+Created by **Adam Hudec** ([adamhudec.gfx.work](https://adamhudec.gfx.work)),
 as part of coursework for **Matematica per il Design** at **ISIA Urbino**,
 under the supervision of **Prof. Andreas Gysin**, 2025.
 
