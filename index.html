@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Antialiasing Kuwahara Filter Presentation</title>
+  <title>Kuwahara</title>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     body {
-      font-family: Helvetica, sans-serif;
+      font-family: 'Figtree', sans-serif;
       margin: 0;
       padding: 0;
       background: #000000;
@@ -14,19 +18,19 @@
     }
 
     section {
-      font-size: 20px;
+      font-size: 22px;
       padding: 60px 20px;
-      max-width: 800px;
+      max-width: 950px;
       margin: auto;
       border-bottom: 1px solid #ddd;
     }
 
     h1, h2 {
-      font-size: 30px;
+      font-size: 32px;
       color: #ffffff;
     }
     h3 {
-      font-size: 41px;
+      font-size: 50px;
       color: #ffffff;
     }
 
@@ -34,11 +38,11 @@
       max-width: 100%;
       display: block;
       margin: 20px 0;
-      border-radius: 8px;
+      border-radius: 0px;
     }
 
     .small {
-      font-size: 17px;
+      font-size: 20px;
       line-height: 1.5;
       color: #ffffff;
     }
@@ -84,21 +88,6 @@
     html {
       scroll-behavior: smooth;
     }
-    
-    .image-row {
-      display: flex;
-      gap: 20px; /* space between images */
-      justify-content: left; 
-      align-items: center; /* align vertical */
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .image-row img {
-      height: 150px; /* or any height you prefer */
-      object-fit: contain; /* preserve aspect ratio */
-      border-radius: 0px;
-    }
 
   </style>
 </head>
@@ -108,18 +97,19 @@
     <div class="nav-container">
       <div class="nav-right">
         <a href="#intro">Intro</a>
-        <a href="#classic">Mechanism</a>
-        <a href="#problem">Problem</a>
+        <a href="#classic">Concept</a>
+        <a href="#problem">Blocks</a>
         <a href="#gkf">GKF</a>
-        <a href="#akf">AKF</a>
-        <a href="#usage">Usage</a>
-        <a href="#end">End</a>
+        <!--<a href="#akf">AKF</a>-->
+        <a href="#usage">Gallery</a>
+        <a href="#end">References</a>
       </div>
     </div>
   </nav>
 
   <section id="top">
-    <h3>The Kuwahara Filter</h3>
+    <h3 style="margin-top: 14px;">The Kuwahara Filter</h3>
+    <img src="images/wide4.jpg" alt="intro">
   </section>
 
   <section id="intro">
@@ -130,61 +120,301 @@
   </section>
 
   <section id="classic">
-    <h2>How it works</h2>
-    <p>
-      The filter sets a square area around a pixel, divides the are into 4 overlapping sub-regions. For each sector it calculates the average color value and the standart deviation, afterwards the pixel is asigned the value of the sub-region the lowest standart deviation (most similar pixels).
-    </p>
-    <p>
-      If a pixel is just outside an edge, the filter will usually choose a smooth region on the same side, away from the edge. If the pixel is right on the edge, it tends to pick the smoother of the two sides – whichever has less variation.
-    </p>
-    <div class="image-row">
-      <img src="images/eq0.png" alt="Division">
-      <img src="images/s0.png" alt="Pixels">
-      <img src="images/s5.png" alt="Values">
-    </div>
-    <p>
+
+<h2>How it works</h2>
+<p>
+  The Kuwahara filter is a non-linear smoothing filter that works by examining a square region around each pixel and dividing it into 4 overlapping sub-regions.
+</p>
+<p>
+  For each sub-region, it calculates:
+  <ul>
+    <li>Average intensity (mean value)</li>
+    <li>Standard deviation (variation)</li>
+  </ul>
+  Then it assigns the pixel the average value from the sub-region with the lowest standard deviation – which is the smoothest region.
+</p>
+<p><br></p>
+  <img src="images/scheme_colors.png" alt="Values">
+<p><br></p>
+
+<h2>Mathematical Breakdown</h2>
+
+<p>
+  <strong>1. Mean of a region \( S_k \):</strong><br>
+  \[
+  \mu_k = \frac{1}{N} \sum_{(x, y) \in S_k} I(x, y)
+  \]
+  <strong>What this means:</strong><br>
+  <ul>
+    <li><strong>\( S_k \)</strong>: The k-th subregion (e.g., top-left, bottom-right quadrant).</li>
+    <li><strong>\( I(x, y) \)</strong>: Intensity or color value at position (x, y).</li>
+    <li><strong>\( N \)</strong>: Total number of pixels in region \( S_k \).</li>
+    <li><strong>\( \mu_k \)</strong>: The average (mean) intensity in region \( S_k \).</li>
+  </ul>
+  This equation gives you the “average color” of that region. <br>If all pixels are similar, the mean is a good representation of the region.
+</p>
+
+<p><br></p>
+
+<p>
+  <strong>2. Variance (used to compute standard deviation) of region \( S_k \):</strong><br>
+  \[
+  \sigma_k^2 = \frac{1}{N} \sum_{(x, y) \in S_k} (I(x, y) - \mu_k)^2
+  \]
+  <strong>What this means:</strong><br>
+  <ul>
+    <li><strong>\( \sigma_k^2 \)</strong>: Variance of region \( S_k \).</li>
+    <li><strong>\( (I(x, y) - \mu_k)^2 \)</strong>: Measures how different each pixel is from the region's mean.</li>
+  </ul>
+  This equation tells us how much the intensities vary in that region.<br> Lower variance = smoother region = fewer edges or noise.
+</p>
+
+<p><br></p>
+
+<p>
+  <strong>3. Final output value for the pixel:</strong><br>
+  \[
+  I_{\text{filtered}}(x, y) = \mu_{k^*}, \quad \text{where } k^* = \arg\min_k \sigma_k^2
+  \]
+  <strong>What this means:</strong><br>
+  <ul>
+    <li><strong>\( k^* \)</strong>: Index of the region with the smallest variance (i.e., the smoothest).</li>
+    <li><strong>\( \mu_{k^*} \)</strong>: Mean value of the smoothest region.</li>
+    <li><strong>\( I_{\text{filtered}}(x, y) \)</strong>: Final output pixel value after filtering.</li>
+  </ul>
+ The filter picks the region with the lowest variation and uses its average value as the new pixel color. This keeps smooth areas smooth while protecting edges.
+</p>
+<p><br></p>
+    <!--<p>
       For color images, the filter should not be performed by applying the filter to each RGB channel separately, rather than HSV color space should be used. 
     </p>
-    <iframe src="filter_KFv2.html" width="120%" height="600px" style="border: none; border-radius: 0px; margin-top: 0px; margin-left: -27px;">
-    </iframe>
+
+<p><br></p>
+  -->
+<p>
+  Filtered – unfiltered image comparison:
+</p>
+    <img src="images/compare.jpg" alt="Blocky Artifacts">
   </section>
 
   <section id="problem">
     <h2>The Blockiness Problem</h2>
-    <p>Each pixel has the same weight, therefore while calculating it creates blocky artifacts.</p>
-    <img src="images/pink2.jpg" alt="Blocky Artifacts">
+    <p> In the Kuwahara filter, all pixels in a region are treated equally when computing the mean and variance.
+    This means that pixels near the edge of a region contribute just as much as those near the center.
+    As a result, the filter may produce visible "blocky" artifacts – especially around edges or in areas of subtle detail – due to the sharp transition between regions.</p>
+    <iframe src="filter_KFv2.html" width="110%" height="750px" style="border: none; border-radius: 0px; margin-top: 0px; margin-left: -27px;">
+    </iframe>
   </section>
 
-  <section id="gkf">
-    <h2>Generalized Kuwahara Filter</h2>
-    <p>Giuseppe Papari and his team introduced several improvements to the original filter. They replaced the square window with a circular one divided into 8 segments, added Gaussian weighting to emphasize central pixels, and refined the method for determining the final output color.</p>
+
+<section id="gkf">
+  <h2>Generalized Kuwahara Filter</h2>
+  <p>
+    The Generalized Kuwahara Filter (GKF), introduced by Giuseppe Papari and his team, improves upon the original version by reducing blocky artifacts through several key changes:
+  </p>
+  <ul>
+    <li>Uses a <strong>circular region</strong> around a pixel instead of a square one.</li>
+    <li>Divides it into <strong>8 overlapping sectors</strong>.</li>
+    <li>Applies <strong>Gaussian weighting</strong> to prioritize pixels near the center.</li>
+    <li>Chooses the region with the lowest <strong>weighted variance</strong> to determine the final pixel value.</li>
+  </ul>
+
+<p><br></p>
+
+  <h2>Mathematical Breakdown</h2>
+
+  <p>
+    <strong>1. Gaussian Weight Function:</strong><br>
+    \[
+    w(x, y) = \exp\left(-\frac{(x - x_0)^2 + (y - y_0)^2}{2\sigma^2}\right)
+    \]
+    <strong>What this means:</strong>
+    <ul>
+      <li><strong>\( (x_0, y_0) \)</strong>: Center pixel being processed.</li>
+      <li><strong>\( w(x, y) \)</strong>: Weight based on distance from the center.</li>
+      <li><strong>\( \sigma \)</strong>: Controls the spread of the weights.</li>
+      <li>Gives more importance to pixels near the center → smoother result.</li>
+    </ul>
+  </p>
+
+<p><br></p>
+
+  <p>
+    <strong>2. Weighted Mean of a Sector \( S_k \):</strong><br>
+    \[
+    \mu_k = \frac{\sum_{(x, y) \in S_k} w(x, y) \cdot I(x, y)}{\sum_{(x, y) \in S_k} w(x, y)}
+    \]
+    <strong>What this means:</strong>
+    <ul>
+      <li><strong>\( I(x, y) \)</strong>: Pixel intensity at (x, y).</li>
+      <li><strong>\( w(x, y) \)</strong>: Gaussian weight.</li>
+      <li><strong>\( \mu_k \)</strong>: Weighted average value for sector \( S_k \).</li>
+    </ul>
+  </p>
+
+<p><br></p>
+
+  <p>
+    <strong>3. Weighted Variance of Sector \( S_k \):</strong><br>
+    \[
+    \sigma_k^2 = \frac{\sum_{(x, y) \in S_k} w(x, y) \cdot (I(x, y) - \mu_k)^2}{\sum_{(x, y) \in S_k} w(x, y)}
+    \]
+    <strong>What this means:</strong>
+    <ul>
+      <li><strong>\( \sigma_k^2 \)</strong>: Measures intensity variation within sector.</li>
+      <li>Lower variance = smoother, more uniform region.</li>
+    </ul>
+  </p>
+
+  <p><br></p>
+
+  <p>
+    <strong>4. Final Pixel Value:</strong><br>
+    \[
+    I_{\text{filtered}}(x_0, y_0) = \mu_{k^*}, \quad \text{where } k^* = \arg\min_k \sigma_k^2
+    \]
+    <strong>What this means:</strong>
+    <ul>
+      <li><strong>\( k^* \)</strong>: Index of the sector with lowest variance.</li>
+      <li><strong>\( \mu_{k^*} \)</strong>: Average value of the smoothest region.</li>
+      <li><strong>\( I_{\text{filtered}}(x_0, y_0) \)</strong>: New filtered pixel value.</li>
+    </ul>
+  </p>
+<!--
+  <h3>Improvements Over Classic Kuwahara</h3>
+  <table style="width: 100%; border-collapse: collapse; font-size: 18px;">
+    <thead>
+      <tr>
+        <th style="border-bottom: 1px solid #ccc;">Feature</th>
+        <th style="border-bottom: 1px solid #ccc;">Classic KF</th>
+        <th style="border-bottom: 1px solid #ccc;">Generalized KF</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Region Shape</td>
+        <td>Square (4 quadrants)</td>
+        <td>Circle (8 sectors)</td>
+      </tr>
+      <tr>
+        <td>Pixel Weight</td>
+        <td>Uniform</td>
+        <td>Gaussian (center-favored)</td>
+      </tr>
+      <tr>
+        <td>Edge Sensitivity</td>
+        <td>Lower</td>
+        <td>Higher (follows shape better)</td>
+      </tr>
+      <tr>
+        <td>Artifact Reduction</td>
+        <td>Blocky</td>
+        <td>Smoother transitions</td>
+      </tr>
+      <tr>
+        <td>Complexity</td>
+        <td>Lower</td>
+        <td>Higher</td>
+      </tr>
+
+    </tbody>
+  </table>
+</section>
+-->
+
+    <iframe src="filter_GKFv2.html" width="110%" height="750px" style="border: none; border-radius: 0px; margin-top: 0px; margin-left: -27px;">
+    </iframe>
+
+    <p><br></p>
+
     <p>
-      We need to calculate the the chosen pixel's contrubution to a sector. To figure out what sector is the pixel in. The following equasion is used:
+    Unfiltered – KF – GKF comparison:
     </p>
-    <img src="images/placeholder.png" alt="Antialiasing Scheme">
+    <img src="images/compare2.jpg" alt="GKF comparison">
   </section>
 
-  <section id="formula">
+<!--
+  <section id="akf">
     <h2>Anisotropic Kuwahara Filter</h2>
     <p>
       Instead of gaussian weight this filter version uses polynomials to approximate the pixel weight
     </p>
     <p class="small">This results in smoother transitions between regions, preserving edges while eliminating chunkiness.</p>
   </section>
-
+-->
   <section id="usage">
-    <h2>Usage</h2>
-    <p>On the left: Classic Kuwahara. On the right: Antialiased version. Notice smoother transitions and preserved detail.</p>
-    <img src="images/placeholder.png" alt="Before and After Comparison">
+    <h2>Gallery of outputs</h2>
+    <img src="images/obloha4.png" alt="Sky">
+    <img src="images/porter2.png" alt="Porter">
+    <img src="images/kvetina2nKF.png" alt="Flower">
+    <img src="images/james2.png" alt="James">
+    <img src="images/cella3.jpg" alt="Cella">
+    <img src="images/butterfly3.png" alt="Butterfly">
   </section>
+
 
 
   <section id="end">
-    <h2>Sources</h2>
+    <h2>References</h2>
+
     <p>
-      The Antialiasing Kuwahara filter modernizes a classic technique, improving visual quality and maintaining important edge features. It’s a great example of combining statistical rigor with perceptual improvements.
+      Papari, G., Petkov, N., & Campisi, P. (2007). Artistic edge and corner enhancing smoothing.<br>
+      <em>IEEE Transactions on Image Processing, 16(10)</em>, 2449–2461.
     </p>
+
+    <p>
+      YouTube. (n.d.). Kuwahara Filter Explained [Video].<br>
+      <a href="https://www.youtube.com/watch?v=LDhN-JK3U9g" target="_blank" style="color: rgb(255, 255, 255);">
+        https://www.youtube.com/watch?v=LDhN-JK3U9g
+      </a>
+    </p>
+
+    <p>
+      Medium. (n.d.). What is a Kuwahara filter?<br>
+      <a href="https://medium.com/swlh/what-is-a-kuwahara-filter-77921ce286f2" target="_blank" style="color: rgb(255, 255, 255);">
+        https://medium.com/swlh/what-is-a-kuwahara-filter-77921ce286f2
+      </a>
+    </p>
+
+    <p>
+      Blender Manual. (n.d.). Kuwahara – Blender Manual.<br>
+      <a href="https://docs.blender.org/manual/en/latest/compositing/types/filter/kuwahara.html" target="_blank" style="color: rgb(255, 255, 255);">
+        https://docs.blender.org/manual/en/latest/compositing/types/filter/kuwahara.html
+      </a>
+    </p>
+
+    <p>
+      Adobe HelpX. (n.d.). Anisotropic Kuwahara.<br>
+      <a href="https://helpx.adobe.com/substance-3d-designer/substance-compositing-graphs/nodes-reference-for-substance-compositing-graphs/node-library/filters/effects/anisotropic-kuwahara.html" target="_blank" style="color: rgb(255, 255, 255);">
+        https://helpx.adobe.com/substance-3d-designer
+      </a>
+    </p>
+
+    <p>
+    GitHub. (n.d.). pykuwahara: Kuwahara filter implementations in Python.<br>
+    <a href="https://github.com/yoch/pykuwahara" target="_blank" style="color: rgb(255, 255, 255);">
+      https://github.com/yoch/pykuwahara
+    </a>
+    </p>
+    
+    <p>
+      Nancy D. Huynh. (n.d.). Personal Portfolio.<br>
+      <a href="https://nancydhuynh.com" target="_blank" style="color: rgb(255, 255, 255);">
+        https://nancydhuynh.com
+      </a>
+    </p>
+
+
   </section>
 
+  <section id="info">
+    <h2>Info</h2>
+    <p>
+      Created by <strong>Adam Hudec</strong><br>
+    </p> 
+  <p>Matematica per il design<br>Andreas Gysin<br>2025<br>ISIA U
+  </p>
+  </p>
+  </section>
 </body>
 </html>
