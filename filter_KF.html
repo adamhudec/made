@@ -5,187 +5,71 @@
   <title>Original Kuwahara Filter</title>
   <style>
     body {
-      background-color: #000000;
-      color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Figtree', sans-serif;
+      padding: 22px;
+      font-size: 22px;
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
     }
 
     label {
       display: inline-block;
       width: 180px;
       margin-top: 10px;
-      color: #ffffff;
     }
 
     input[type="range"] {
       width: 200px;
-      background-color: #000000;
-      color: #ffffff;
-      border: 1px solid #000000;
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #444;
+      margin-top: 4px;
     }
 
-    input[type="range"]::-webkit-slider-thumb {
-      background: #000000;
+    .canvas-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
     }
 
     canvas {
-      display: block;
-      margin-top: 20px;
-      border: 1px solid #000000;
+      border: 1px solid #333;
       max-width: 100%;
     }
 
-    button {
-      background-color: #000000;
-      color: #fff;
-      padding: 6px 12px;
-      border: 1px solid #ffffff;
-      margin-bottom: 0px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #ffffff;
+    .canvas-label {
+      text-align: center;
+      margin-top: 8px;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
 
-  <!-- Toggle Filter Button -->
-  <label>Toggle Filter: <span id="filterToggleValue">1</span></label>
-  <button id="toggleFilterBtn">Toggle Filter</button><br>
+  <div class="slider-group">
+    <label for="radiusSlider">Filter Radius: <span id="radiusValue">3</span></label>
+    <input type="range" id="radiusSlider" min="1" max="10" value="3">
+  </div>
 
-  <!-- Radius Slider -->
-  <label for="radiusSlider">Filter Radius: <span id="radiusValue">3</span></label>
-  <input type="range" id="radiusSlider" min="1" max="10" value="3"><br>
+  <!-- Image and Canvas Container -->
+  <div class="canvas-container">
+    <div>
+      <canvas id="filteredCanvas"></canvas>
+      <div class="canvas-label"></div>
+    </div>
+    <div>
+      <canvas id="originalCanvas"></canvas>
+      <div class="canvas-label"></div>
+    </div>
+  </div>
 
-  <!-- Artifact Strength Slider -->
-  <label for="artifactSlider">Artifact Strength: <span id="artifactValue">1.00</span></label>
-  <input type="range" id="artifactSlider" min="0" max="100" value="100"><br><br>
-
-  <!-- Hidden Image & Canvas -->
-  <img id="sourceImage" src="images/pink4.jpg" style="display: none;" crossorigin="anonymous" />
-  <canvas id="canvas"></canvas>
-
-  <script>
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    const img = document.getElementById("sourceImage");
-
-    const radiusSlider = document.getElementById("radiusSlider");
-    const artifactSlider = document.getElementById("artifactSlider");
-
-    const radiusValue = document.getElementById("radiusValue");
-    const artifactValue = document.getElementById("artifactValue");
-
-    const toggleBtn = document.getElementById("toggleFilterBtn");
-    const toggleVal = document.getElementById("filterToggleValue");
-
-    let originalImageData;
-    let filterEnabled = true;
-
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      applyFilteredImage();
-    };
-
-    radiusSlider.addEventListener("input", () => {
-      if (filterEnabled) applyFilteredImage();
-    });
-
-    artifactSlider.addEventListener("input", () => {
-      if (filterEnabled) applyFilteredImage();
-    });
-
-    toggleBtn.addEventListener("click", () => {
-      filterEnabled = !filterEnabled;
-      toggleVal.textContent = filterEnabled ? 1 : 0;
-      if (filterEnabled) {
-        applyFilteredImage();
-      } else {
-        ctx.putImageData(originalImageData, 0, 0);
-      }
-    });
-
-    function applyFilteredImage() {
-      const radius = parseInt(radiusSlider.value);
-      const artifactStrength = parseFloat(artifactSlider.value) / 100;
-
-      radiusValue.textContent = radius;
-      artifactValue.textContent = artifactStrength.toFixed(2);
-
-      ctx.putImageData(originalImageData, 0, 0);
-      const filteredData = applyKuwaharaFilter(canvas.width, canvas.height, radius, artifactStrength);
-      ctx.putImageData(filteredData, 0, 0);
-    }
-
-    function applyKuwaharaFilter(width, height, radius, artifactStrength = 1.0) {
-      const srcData = ctx.getImageData(0, 0, width, height);
-      const src = srcData.data;
-      const dstData = ctx.createImageData(width, height);
-      const dst = dstData.data;
-
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          let minVariance = Infinity;
-          let bestMean = [0, 0, 0];
-
-          for (let quadrant = 0; quadrant < 4; quadrant++) {
-            let rSum = 0, gSum = 0, bSum = 0;
-            let rSq = 0, gSq = 0, bSq = 0;
-            let count = 0;
-
-            for (let dy = 0; dy <= radius; dy++) {
-              for (let dx = 0; dx <= radius; dx++) {
-                let nx = x + (quadrant % 2 === 0 ? dx : -dx);
-                let ny = y + (quadrant < 2 ? dy : -dy);
-
-                if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-
-                const idx = (ny * width + nx) * 4;
-                const r = src[idx];
-                const g = src[idx + 1];
-                const b = src[idx + 2];
-
-                rSum += r; gSum += g; bSum += b;
-                rSq += r * r; gSq += g * g; bSq += b * b;
-                count++;
-              }
-            }
-
-            if (count === 0) continue;
-
-            const rMean = rSum / count;
-            const gMean = gSum / count;
-            const bMean = bSum / count;
-
-            const rVar = rSq / count - rMean * rMean;
-            const gVar = gSq / count - gMean * gMean;
-            const bVar = bSq / count - bMean * bMean;
-            const variance = rVar + gVar + bVar;
-
-            if (variance < minVariance) {
-              minVariance = variance;
-              bestMean = [rMean, gMean, bMean];
-            }
-          }
-
-          const i = (y * width + x) * 4;
-          const origR = src[i], origG = src[i + 1], origB = src[i + 2];
-
-          dst[i]     = (1 - artifactStrength) * origR + artifactStrength * bestMean[0];
-          dst[i + 1] = (1 - artifactStrength) * origG + artifactStrength * bestMean[1];
-          dst[i + 2] = (1 - artifactStrength) * origB + artifactStrength * bestMean[2];
-          dst[i + 3] = 255;
-        }
-      }
-
-      return dstData;
-    }
-  </script>
+  <img id="sourceImage" src="images/butterfly2.jpg" style="display: none;" crossorigin="anonymous" />
+  <button id="saveBtn">Save Filtered Image</button>
+  <script src="script_KF.js"></script>
 </body>
 </html>
