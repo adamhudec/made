@@ -30,5 +30,7 @@ This is an interactive web-based implementation of the **Kuwahara Filter**, a no
 
 ## 👤 Author
 
-Created by **Adam Hudec** as part of coursework for **Matematica per il Design** at **ISIA Urbino**, under the supervision of **Prof. Andreas Gysin**, 2025.
-https://adamhudec.gfx.work
+Created by **Adam Hudec** https://adamhudec.gfx.work,
+as part of coursework for **Matematica per il Design** at **ISIA Urbino**,
+under the supervision of **Prof. Andreas Gysin**, 2025.
+
