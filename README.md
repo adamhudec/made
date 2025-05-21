@@ -1,4 +1,4 @@
-# Kuwahara Filter – Interactive Image Processing Tool
+# Kuwahara Filter
 
 An interactive web-based implementation of the **Kuwahara Filter**.
 
