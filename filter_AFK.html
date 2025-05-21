@@ -4,6 +4,15 @@
   <meta charset="UTF-8" />
   <title>Anisotropic Kuwahara Filter</title>
   <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    .slider-group {
+      margin-bottom: 16px;
+    }
     label {
       display: inline-block;
       width: 180px;
@@ -11,32 +20,45 @@
     }
     input[type="range"] {
       width: 200px;
+      background: #000;
+      color: #fff;
+      border: 1px solid #444;
+      margin-top: 4px;
+    }
+    .canvas-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    canvas {
+      border: 1px solid #333;
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <!-- Radius Slider -->
-  <label for="radiusSlider">Filter Radius: <span id="radiusValue">3</span></label>
-  <input type="range" id="radiusSlider" min="1" max="10" value="3"><br>
+  <div class="slider-group">
+    <label for="radiusSlider">Radius: <span id="radiusValue">5</span></label>
+    <input type="range" id="radiusSlider" min="1" max="30" value="5">
+  </div>
 
-  <!-- Strength Slider -->
-  <label for="strengthSlider">Filter Strength: <span id="strengthValue">1.00</span></label>
-  <input type="range" id="strengthSlider" min="0" max="100" value="100"><br>
+  <div class="canvas-container">
+    <div>
+      <canvas id="filteredCanvas"></canvas>
+      <div class="canvas-label">AKF Output</div>
+    </div>
+    <div>
+      <canvas id="originalCanvas"></canvas>
+      <div class="canvas-label">Original</div>
+    </div>
+  </div>
 
-  <!-- Sector Count Slider -->
-  <label for="sectorSlider">Directional Sectors: <span id="sectorValue">8</span></label>
-  <input type="range" id="sectorSlider" min="2" max="16" value="8"><br>
+  <button id="saveBtn">Save Filtered Image</button>
 
-  <!-- Artifact Strength Slider -->
-  <label for="artifactSlider">Artifact Strength: <span id="artifactValue">1.00</span></label>
-  <input type="range" id="artifactSlider" min="0" max="100" value="100"><br><br>
-
-  <!-- Hidden Image & Canvas -->
-  <img id="sourceImage" src="/17_kuwaharaV2/images/pink4.jpg" style="display: none;" crossorigin="anonymous" />
-  <canvas id="canvas"></canvas>
-
-  <script src="script.js"></script>
+  <img id="sourceImage" src="images/kvetina2n.jpg" style="display:none" crossorigin="anonymous" />
+  <script src="script_AFK.js"></script>
 
 </body>
 </html>
