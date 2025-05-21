@@ -5,15 +5,11 @@ const originalCtx = originalCanvas.getContext("2d");
 const img = document.getElementById("sourceImage");
 
 const radiusSlider = document.getElementById("radiusSlider");
-const artifactSlider = document.getElementById("artifactSlider");
-
 const radiusValue = document.getElementById("radiusValue");
-const artifactValue = document.getElementById("artifactValue");
 
 let originalImageData;
 
-// Set your desired image scale here
-const scale = 0.35; // 50% of original size
+const scale = 0.46; // Scale factor
 
 img.onload = () => {
   const scaledWidth = img.width * scale;
@@ -31,26 +27,21 @@ img.onload = () => {
 };
 
 radiusSlider.addEventListener("input", applyFilteredImage);
-artifactSlider.addEventListener("input", applyFilteredImage);
 
 function applyFilteredImage() {
   const radius = parseInt(radiusSlider.value);
-  const artifactStrength = parseFloat(artifactSlider.value) / 100;
-
   radiusValue.textContent = radius;
-  artifactValue.textContent = artifactStrength.toFixed(2);
 
   const filteredData = applyKuwaharaFilter(
     filteredCanvas.width,
     filteredCanvas.height,
-    radius,
-    artifactStrength
+    radius
   );
 
   filteredCtx.putImageData(filteredData, 0, 0);
 }
 
-function applyKuwaharaFilter(width, height, radius, artifactStrength = 1.0) {
+function applyKuwaharaFilter(width, height, radius) {
   const src = originalImageData.data;
   const dstData = filteredCtx.createImageData(width, height);
   const dst = dstData.data;
@@ -101,11 +92,9 @@ function applyKuwaharaFilter(width, height, radius, artifactStrength = 1.0) {
       }
 
       const i = (y * width + x) * 4;
-      const origR = src[i], origG = src[i + 1], origB = src[i + 2];
-
-      dst[i]     = (1 - artifactStrength) * origR + artifactStrength * bestMean[0];
-      dst[i + 1] = (1 - artifactStrength) * origG + artifactStrength * bestMean[1];
-      dst[i + 2] = (1 - artifactStrength) * origB + artifactStrength * bestMean[2];
+      dst[i]     = bestMean[0];
+      dst[i + 1] = bestMean[1];
+      dst[i + 2] = bestMean[2];
       dst[i + 3] = 255;
     }
   }
